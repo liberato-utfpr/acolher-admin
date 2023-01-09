@@ -1,44 +1,10 @@
 import useAuthUser from 'src/composables/UseAuthUser'
 
 const routes = [
-  {
-    //PUBLIC
-    path: '/',
-    component: () => import('layouts/BlankLayout.vue'),
-    children: [
-      { path: '', name: '/', component: () => import('src/pages/Login.vue') },
-      { path: 'registro', name: 'registro', component: () => import('src/pages/Registro.vue') },
-      { path: 'registro-confirmacao', name: 'registro-confirmacao', component: () => import('src/pages/Registro-confirmacao.vue') },
-    ],
-    beforeEnter: (to, from) => {
-      const { isLoggedIn } = useAuthUser()
-      if (isLoggedIn()) {
-        return { name: 'home' }
-      }
-    }
-  },
-  {
-    // AUTENTICADO
-    path: '/',
-    component: () => import('layouts/IntegradorLayout.vue'),
-    children: [
-      { path: 'home', name: 'home', component: () => import('src/pages/Home.vue') },
-    ],
-    beforeEnter: (to, from) => {
-      const { isLoggedIn } = useAuthUser()
-      if (!isLoggedIn()) {
-        return { name: '/' }
-      }
 
-      // const { isIntegrador } = useAuthUser()
-      // if (!isIntegrador()) {
-      //   return { name: '/' }
-      // }
-    }
-  },
   {
     // PUBLIC
-    path: '/admin',
+    path: '/',
     component: () => import('layouts/BlankLayout.vue'),
     children: [
       { path: '', name:'admin-login', component: () => import('pages/admin/LoginAdmin.vue') },
@@ -52,7 +18,7 @@ const routes = [
   },
   {
     // AUTENTICADO
-    path: '/admin',
+    path: '/',
     component: () => import('layouts/AdminLayout.vue'),
     children: [
       { path: 'cadastro', name:'admin-form', component: () => import('pages/admin/FormAdmin.vue') },
