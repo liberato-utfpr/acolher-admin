@@ -58,7 +58,7 @@
             @keydown.enter.prevent="adicionarVisitante"
           />
 
-          <div class="col-3">
+          <div class="col-12 col-md-3">
             <q-btn
               class="full-width q-py-md"
               label="Adicionar"
