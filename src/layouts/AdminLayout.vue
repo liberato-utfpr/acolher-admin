@@ -50,6 +50,7 @@
         </q-item-label>
 
         <!-- <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" /> -->
+        <q-separator />
         <EssentialLink
           v-for="link in linksList"
           :key="link.title"
@@ -97,6 +98,12 @@ const linksList = [
     caption: '',
     icon: 'mdi-account-group',
     routeName: 'visitante-list'
+  },
+  {
+    title: 'Em andamento',
+    caption: '',
+    icon: 'mdi-feature-search',
+    routeName: 'acompanhamento-list'
   },
 
 ]

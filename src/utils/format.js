@@ -22,8 +22,17 @@ const getDiaSemana = (str) => {
   return diaSemana[data.getDay()]
 }
 
+const somaData = (strData, dias) => {
+  console.log(strData)
+  const vetor = strData.split('-')
+  const data = new Date(vetor[0], vetor[1] - 1, vetor[2])
+  data.setDate(data.getDate() + dias)
+  return data.toLocaleDateString()
+}
+
 export {
   formatDate,
   formatCelular,
   getDiaSemana,
+  somaData,
 }

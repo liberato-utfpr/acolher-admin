@@ -29,6 +29,7 @@ const routes = [
       { path: 'celebracao-form/:id?', name:'celebracao-form', component: () => import('src/pages/admin/Celebracao/Form.vue') },
       { path: 'celebracao-update/:id?', name:'celebracao-update', component: () => import('src/pages/admin/Celebracao/Update.vue') },
       { path: 'visitante', name:'visitante-list', component: () => import('src/pages/admin/Visitante/List.vue') },
+      { path: 'acompanhamento', name:'acompanhamento-list', component: () => import('src/pages/admin/Acompanhamento/List.vue') },
 
     ],
     beforeEnter: (to, from) => {
