@@ -23,11 +23,19 @@ const getDiaSemana = (str) => {
 }
 
 const somaData = (strData, dias) => {
-  console.log(strData)
   const vetor = strData.split('-')
   const data = new Date(vetor[0], vetor[1] - 1, vetor[2])
   data.setDate(data.getDate() + dias)
   return data.toLocaleDateString()
+}
+
+const foraDoPrazo = (dataInicio) => {
+  const vetor = dataInicio.split('-')
+  const dataFim = new Date(vetor[0], vetor[1] - 1, vetor[2])
+  dataFim.setDate(dataFim.getDate() + 15)
+  const dataAtual = new Date()
+
+  return dataAtual > dataFim
 }
 
 export {
@@ -35,4 +43,5 @@ export {
   formatCelular,
   getDiaSemana,
   somaData,
+  foraDoPrazo,
 }

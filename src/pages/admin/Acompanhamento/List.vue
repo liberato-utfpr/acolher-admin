@@ -16,8 +16,8 @@
         :loading="loading"
         sortBy="nome"
         v-model:pagination="initialPagination"
-        rows-per-page-label="Visitantes por página"
-        no-data-label="Nenhum visitante cadastrado"
+        rows-per-page-label="Acompanhamentos por página"
+        no-data-label="Nenhum acompanhamento cadastrado"
       >
         <template v-slot:body-cell-visitante="props">
           <q-td :props="props" >
@@ -27,7 +27,11 @@
 
         <template v-slot:body-cell-data_fim="props">
           <q-td :props="props" >
-            <span>{{ somaData(props.row.data_inicio, 15) }}  </span>
+            <span
+              :class="foraDoPrazo(props.row.data_inicio) ? 'text-white text-weight-bold bg-red  q-pa-xs' : 'text-black'"
+            >
+              {{ somaData(props.row.data_inicio, 15) }}
+            </span>
           </q-td>
         </template>
 
@@ -37,18 +41,48 @@
               class="q-mr-sm"
               icon="mdi-whatsapp"
               color="green-7"
-              size="md"
+              size="sm"
               rounded
               dense
               @click="handleSendWhats(props.row.integrador.celular, props.row.integrador.nome)"
             />
             <span>{{ props.row.integrador.nome }}  </span>
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-parecer="props">
+          <q-td :props="props" >
+            <q-btn
+              v-if="props.row.parecer_integrador"
+              class="q-mr-sm"
+              icon="mdi-file-search"
+              label="Ver"
+              size="sm"
+              dense
+              @click="exibeParecer(props.row.parecer_integrador)"
+            >
+              <q-tooltip>Ver Parecer</q-tooltip>
+            </q-btn>
+            <span v-else>
+              Sem parecer
+            </span>
 
           </q-td>
         </template>
 
-
-
+        <template v-slot:body-cell-acoes="props">
+          <q-td :props="props" class="q-gutter-x-sm">
+            <q-btn
+              label="Finalizar"
+              icon="mdi-check-bold"
+              dense
+              size="sm"
+              @click="handleEdit(props.row)"
+            >
+              <q-tooltip>Finalizar</q-tooltip>
+            </q-btn>
+          </q-td>
+        </template>
 
       </q-table>
 
@@ -62,25 +96,13 @@
       />
     </div>
 
-    <!-- DIALOG -->
-    <DialogVisitante
-      :visible="openEditDialog"
-      :visitante="visitanteToEdit"
-      @closeDialog="openEditDialog = false"
-      @atualizarClick="atualizarVisitante"
-    />
-    <DialogIntegrador
-      :visible="openIntegradorDialog"
-      :visitante="visitanteToEdit"
-      @closeDialog="openIntegradorDialog = false"
-      @atribuirClick="iniciarAcompanhamento"
-    />
+
   </q-page>
 
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import useNotify from 'src/composables/UseNotify';
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
@@ -88,21 +110,7 @@ import { openURL } from 'quasar';
 import { columnsAcompanhamentos, initialPagination } from './table'
 
 import acompanhamentoService from 'src/services/acompanhamentoService';
-import { somaData, getDiaSemana, formatDate } from 'src/utils/format'
-
-import DialogVisitante from 'src/components/DialogVisitante.vue';
-import DialogIntegrador from 'src/components/DialogIntegrador.vue';
-
-
-
-const acompanhamentos = ref([])
-const loading = ref(true)
-// Dialog
-const openEditDialog = ref(false)
-const visitanteToEdit = ref({})
-const openIntegradorDialog = ref(false)
-
-
+import { somaData, foraDoPrazo } from 'src/utils/format'
 
 const { list:listAcompanhamentos, listAcompanhamentoComVisitante } = acompanhamentoService()
 const { notifyError, notifySuccess } = useNotify()
@@ -110,19 +118,19 @@ const { notifyError, notifySuccess } = useNotify()
 const router = useRouter()
 const $q = useQuasar()
 
+const acompanhamentos = ref([])
+const loading = ref(true)
+
 // --------------------------------------------------------------------------
 
-
-
 const handleSendWhats = (celular, nome) => {
-
-const msg = `Olá ${nome}, tudo bem?`
-const link = encodeURI(`https://api.whatsapp.com/send?phone=55${celular}&text=${msg}`)
-openURL(link)
+  const msg = `Olá ${nome}, tudo bem?`
+  // const link = encodeURI(`https://api.whatsapp.com/send?phone=55${celular}&text=${msg}`)
+  const link = encodeURI(`https://wa.me/${celular}&text=${msg}`)
+  openURL(link)
 }
 
 const carregaAcompanhamentos = async () => {
-
   try {
     loading.value = true
     acompanhamentos.value = await listAcompanhamentoComVisitante()
@@ -132,8 +140,29 @@ const carregaAcompanhamentos = async () => {
     notifyError("Erro ao carregar a lista de acompanhamentos")
     console.log(error.message)
   }
+}
+
+const exibeParecer = async (parecer) => {
+
+  $q.dialog({
+    title: 'PARECER',
+    message: parecer,
+  })
 
 }
+
+/************************************************************************
+TABELA
+*************************************************************************/
+const pagesNumber = computed(() =>
+  Math.ceil(acompanhamentos.value.length / initialPagination.value.rowsPerPage)
+)
+
+const handleScrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+/**************************************************************************/
+
 onMounted(() => {
   carregaAcompanhamentos()
 })
