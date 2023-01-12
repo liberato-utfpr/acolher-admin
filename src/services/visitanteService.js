@@ -6,13 +6,15 @@ export default function visitanteService () {
 
   const { getBy, list, listFilter, post, update, remove, supabase } = useApi(table)
 
-  const saveAllVisitantes = async (visitantes) => {
+  // Para todo visitante criado existe uma trigger que cria um acompanhamento
+  const saveAllVisitantes = async (listaVisitantes) => {
     const { error } = await supabase
       .from(table)
-      .insert(visitantes)
+      .insert(listaVisitantes)
 
     if (error) throw error
   }
+
 
   const listVisitantesFromCelebracao = async (idCelebracao) => {
 
@@ -40,6 +42,21 @@ export default function visitanteService () {
     if (error) throw error
     return data
   }
+  const listVisitantesComAcompanhamento = async () => {
+
+    const { data, error } = await supabase
+      .from('acompanhamento')
+      .select(`
+        *,
+        visitante(*)
+      `)
+
+
+
+    if (error) throw error
+    return data
+  }
+
 
   const removeVisitante = async (id) => {
     const { data, error } = await supabase
@@ -71,6 +88,7 @@ export default function visitanteService () {
     saveAllVisitantes,
     listVisitantesFromCelebracao,
     listVisitantesComCelebracao,
+    listVisitantesComAcompanhamento,
     removeVisitante,
     removeVisitantesFromCelebracao,
   }

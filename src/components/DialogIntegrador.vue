@@ -43,7 +43,7 @@ import { ref, onMounted } from 'vue';
 import integradorService from 'src/services/integradorService';
 
 const props = defineProps(['visible', 'visitante', 'mensagem'])
-const emit = defineEmits(['closeDialog', 'atualizarClick'])
+const emit = defineEmits(['closeDialog', 'atribuirClick'])
 
 const { listIntegradoresAprovados } = integradorService()
 
@@ -58,7 +58,7 @@ const cancelar = () => {
 }
 
 const salvar = () => {
-
+  // cria o objeto acompanhamento
   const acompanhamento = criarAcompanhamento(props.visitante, integrador.value)
   integrador.value = ''
   emit('atribuirClick', acompanhamento)

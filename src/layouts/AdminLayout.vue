@@ -44,18 +44,63 @@
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered :width="200">
-      <q-list class="text-secondary" >
-        <q-item-label header>
-          Menu
-        </q-item-label>
 
-        <!-- <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" /> -->
+      <q-list class="text-secondary" >
+
+        <q-item-label header class="text-center" >
+          <q-avatar color="secondary" text-color="white" size="md" label="R">
+            {{ user?.user_metadata.nome.substr(0,1) }}
+          </q-avatar>
+          <div class="text-black q-mt-sm">
+            {{ user?.user_metadata.nome }} {{ user?.user_metadata.sobrenome }}
+          </div>
+          <div class="text-caption">
+            Coordenador
+          </div>
+        </q-item-label>
         <q-separator />
-        <EssentialLink
+
+        <!-- <EssentialLink
           v-for="link in linksList"
           :key="link.title"
           v-bind="link"
-        />
+        /> -->
+
+        <EssentialLink class="q-mt-md"
+          key="Painel" v-bind="{
+          title: 'Painel',
+          caption: '',
+          icon: 'mdi-home',
+          routeName: 'admin-dash'
+        }"/>
+
+        <EssentialLink key="Integradores" v-bind="{
+          title: 'Integradores',
+          caption: '',
+          icon: 'mdi-account-supervisor-circle',
+          routeName: 'admin-integrador'
+        }"/>
+
+        <EssentialLink key="Celebrações" v-bind="{
+          title: 'Celebrações',
+          caption: '',
+          icon: 'mdi-church',
+          routeName: 'celebracao-list'
+        }"/>
+        <EssentialLink key="Visitantes" v-bind="{
+          title: 'Visitantes',
+          caption: '',
+          icon: 'mdi-account-group',
+          routeName: 'visitante-list'
+        }"/>
+        <EssentialLink key="Em andamento" v-bind="{
+          title: 'Em andamento',
+          caption: '',
+          icon: 'mdi-feature-search',
+          routeName: 'acompanhamento-list'
+        }"/>
+
+
       </q-list>
 
     </q-drawer>

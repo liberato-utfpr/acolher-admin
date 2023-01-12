@@ -25,9 +25,20 @@
           </q-td>
         </template>
 
+        <template v-slot:body-cell-data_inicio="props">
+          <q-td :props="props" >
+            <span
+              v-if="props.row.data_inicio"
+            >
+              {{ props.row.data_inicio }}
+            </span>
+          </q-td>
+        </template>
+
         <template v-slot:body-cell-data_fim="props">
           <q-td :props="props" >
             <span
+              v-if="props.row.data_inicio"
               :class="foraDoPrazo(props.row.data_inicio) ? 'text-white text-weight-bold bg-red  q-pa-xs' : 'text-black'"
             >
               {{ somaData(props.row.data_inicio, 15) }}
@@ -36,17 +47,19 @@
         </template>
 
         <template v-slot:body-cell-integrador="props">
-          <q-td :props="props" >
-            <q-btn
-              class="q-mr-sm"
-              icon="mdi-whatsapp"
-              color="green-7"
-              size="sm"
-              rounded
-              dense
-              @click="handleSendWhats(props.row.integrador.celular, props.row.integrador.nome)"
-            />
-            <span>{{ props.row.integrador.nome }}  </span>
+          <q-td :props="props">
+            <div v-if="props.row.integrador">
+              <q-btn
+                class="q-mr-sm"
+                icon="mdi-whatsapp"
+                color="green-7"
+                size="sm"
+                rounded
+                dense
+                @click="handleSendWhats(props.row.integrador.celular, props.row.integrador.nome)"
+              />
+              <span>{{ props.row.integrador.nome }}  </span>
+            </div>
           </q-td>
         </template>
 
@@ -59,14 +72,13 @@
               label="Ver"
               size="sm"
               dense
-              @click="exibeParecer(props.row.parecer_integrador)"
+              @click="handleParecer(props.row.parecer_integrador)"
             >
               <q-tooltip>Ver Parecer</q-tooltip>
             </q-btn>
             <span v-else>
               Sem parecer
             </span>
-
           </q-td>
         </template>
 
@@ -77,7 +89,7 @@
               icon="mdi-check-bold"
               dense
               size="sm"
-              @click="handleEdit(props.row)"
+              @click="handleFinalizar(props.row)"
             >
               <q-tooltip>Finalizar</q-tooltip>
             </q-btn>
@@ -96,6 +108,12 @@
       />
     </div>
 
+    <DialogFinalizarAcompanhamento
+      :visible="openFinalizarDialog"
+      :acompanhamento="acompanhamento"
+      @closeDialog="openFinalizarDialog = false"
+      @finalizarClick="onFinalizarClick"
+    />
 
   </q-page>
 
@@ -108,32 +126,36 @@ import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { openURL } from 'quasar';
 import { columnsAcompanhamentos, initialPagination } from './table'
-
 import acompanhamentoService from 'src/services/acompanhamentoService';
 import { somaData, foraDoPrazo } from 'src/utils/format'
+import DialogFinalizarAcompanhamento from 'src/components/DialogFinalizarAcompanhamento.vue'
 
-const { list:listAcompanhamentos, listAcompanhamentoComVisitante } = acompanhamentoService()
+const { listAcompanhamentoComVisitante, listAcompanhamentoAbertos, update:updateAcompanhamento } = acompanhamentoService()
 const { notifyError, notifySuccess } = useNotify()
 
 const router = useRouter()
 const $q = useQuasar()
 
+const acompanhamento = ref('')
 const acompanhamentos = ref([])
 const loading = ref(true)
+// Dialog
+const openFinalizarDialog = ref(false)
 
 // --------------------------------------------------------------------------
 
 const handleSendWhats = (celular, nome) => {
   const msg = `Olá ${nome}, tudo bem?`
-  // const link = encodeURI(`https://api.whatsapp.com/send?phone=55${celular}&text=${msg}`)
-  const link = encodeURI(`https://wa.me/${celular}&text=${msg}`)
+  const link = encodeURI(`https://api.whatsapp.com/send?phone=55${celular}&text=${msg}`)
   openURL(link)
 }
 
 const carregaAcompanhamentos = async () => {
   try {
     loading.value = true
-    acompanhamentos.value = await listAcompanhamentoComVisitante()
+    acompanhamentos.value = await listAcompanhamentoAbertos()
+
+    //acompanhamentos.value = await listAcompanhamentoComVisitante()
     loading.value = false
 
   } catch (error) {
@@ -142,13 +164,34 @@ const carregaAcompanhamentos = async () => {
   }
 }
 
-const exibeParecer = async (parecer) => {
-
+const handleParecer = (parecer) => {
   $q.dialog({
     title: 'PARECER',
     message: parecer,
   })
+}
 
+const handleFinalizar = (acompanhamentoSelecionado) => {
+
+  acompanhamento.value = acompanhamentoSelecionado
+  openFinalizarDialog.value = true
+
+}
+
+const onFinalizarClick = async (acompanhamento) => {
+  console.log(acompanhamento)
+  acompanhamento.integrador_email = acompanhamento.integrador.email
+  acompanhamento.visitante_id = acompanhamento.visitante.id
+  delete acompanhamento.integrador
+  delete acompanhamento.visitante
+
+  try {
+    await updateAcompanhamento(acompanhamento, 'visitante_id')
+    carregaAcompanhamentos()
+    notifySuccess("Acompanhamento finalizado com sucesso")
+  } catch (error) {
+    console.log(error.message)
+  }
 }
 
 /************************************************************************
@@ -234,13 +277,11 @@ const iniciarAcompanhamento = async (acompanhamento) => {
       celebracao_id:celebracao.id
     }
 
-    console.log(visitante)
+
 
     await updateVisitante(visitante, 'id')
     await salvarAcompanhamento(acompanhamento)
 
-    // console.log(visitanteToEdit)
-    // console.log(acompanhamento)
 
     notifySuccess("Integrador atribuido")
     carregaListVisitantes()

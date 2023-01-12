@@ -54,6 +54,9 @@
               size="sm"
               @click="handleAtribuirIntegrador(props.row)"
             />
+            <q-badge>
+
+            </q-badge>
 
           </q-td>
         </template>
@@ -114,7 +117,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import useNotify from 'src/composables/UseNotify';
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
@@ -136,7 +139,7 @@ const visitanteToEdit = ref({})
 const openIntegradorDialog = ref(false)
 
 
-const { listVisitantesComCelebracao, update:updateVisitante } = visitanteService()
+const { listVisitantesComCelebracao, update:updateVisitante, listVisitantesComAcompanhamento } = visitanteService()
 const { post:salvarAcompanhamento } = acompanhamentoService()
 const { notifyError, notifySuccess } = useNotify()
 
@@ -177,18 +180,7 @@ const handleApagarVisitante = async (visitante) => {
 
 }
 
-const carregaListVisitantes = async () => {
 
-  try {
-    loading.value = true
-    visitantes.value = await listVisitantesComCelebracao()
-    loading.value = false
-  } catch (error) {
-    notifyError("Erro ao carregar a lista de visitantes")
-    console.log(error.message)
-  }
-
-}
 
 const atualizarVisitante = async (visitante) => {
   try {
@@ -218,13 +210,8 @@ const iniciarAcompanhamento = async (acompanhamento) => {
       celebracao_id:celebracao.id
     }
 
-    console.log(visitante)
-
     await updateVisitante(visitante, 'id')
     await salvarAcompanhamento(acompanhamento)
-
-    // console.log(visitanteToEdit)
-    // console.log(acompanhamento)
 
     notifySuccess("Integrador atribuido")
     carregaListVisitantes()
@@ -237,6 +224,40 @@ const iniciarAcompanhamento = async (acompanhamento) => {
 
   }
 }
+
+
+
+const carregaListVisitantes = async () => {
+
+try {
+  loading.value = true
+  visitantes.value = await listVisitantesComCelebracao()
+  loading.value = false
+
+  let visitantesComAcompanhamento = await listVisitantesComAcompanhamento()
+  console.log(visitantesComAcompanhamento)
+
+} catch (error) {
+  notifyError("Erro ao carregar a lista de visitantes")
+  console.log(error.message)
+}
+
+}
+
+
+
+/* TABELA ----------------------------------------------------------------*/
+const pagesNumber = computed(() =>
+Math.ceil(visitantes.value.length / initialPagination.value.rowsPerPage)
+)
+
+const handleScrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+/* -----------------------------------------------------------------------*/
+
+
 
 
 onMounted(() => {
