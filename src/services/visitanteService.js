@@ -42,20 +42,18 @@ export default function visitanteService () {
     if (error) throw error
     return data
   }
-  const listVisitantesComAcompanhamento = async () => {
 
+  const listVisitantesCelebracaoAcompanhamento = async () => {
     const { data, error } = await supabase
-      .from('acompanhamento')
-      .select(`
-        *,
-        visitante(*)
-      `)
-
-
+    .from('visitante_celebracao_acompanhamento')
+    .select()
+    .order('data_celebracao')
+    .order('nome')
 
     if (error) throw error
     return data
   }
+
 
 
   const removeVisitante = async (id) => {
@@ -88,8 +86,8 @@ export default function visitanteService () {
     saveAllVisitantes,
     listVisitantesFromCelebracao,
     listVisitantesComCelebracao,
-    listVisitantesComAcompanhamento,
     removeVisitante,
     removeVisitantesFromCelebracao,
+    listVisitantesCelebracaoAcompanhamento
   }
 }

@@ -21,8 +21,8 @@
       >
         <template v-slot:body-cell-visita="props">
           <q-td :props="props" >
-            <span>{{ formatDate(props.row.celebracao.data) }}  </span>
-            <q-chip square size="sm" >{{ getDiaSemana(props.row.celebracao.data) }}</q-chip>
+            <span>{{ formatDate(props.row.data_celebracao) }}  </span>
+            <q-chip square size="sm" >{{ getDiaSemana(props.row.data_celebracao) }}</q-chip>
           </q-td>
         </template>
 
@@ -47,16 +47,21 @@
         </template> -->
         <template v-slot:body-cell-integrador="props">
           <q-td :props="props" >
+
             <q-btn
+              class="q-mr-xs"
               icon="mdi-account"
               color="primary"
               dense
               size="sm"
-              @click="handleAtribuirIntegrador(props.row)"
+              @click="handleAbrirDialogIntegrador(props.row)"
             />
-            <q-badge>
 
-            </q-badge>
+
+            <q-badge
+                :label="props.row.integrador_nome ? props.row.integrador_nome : 'sem integrador'"
+                :color = "props.row.integrador_nome ? 'positive' : 'negative'"
+              />
 
           </q-td>
         </template>
@@ -102,15 +107,14 @@
     <!-- DIALOG -->
     <DialogVisitante
       :visible="openEditDialog"
-      :visitante="visitanteToEdit"
+      :visitante="visitanteAcompanhamento"
       @closeDialog="openEditDialog = false"
       @atualizarClick="atualizarVisitante"
     />
     <DialogIntegrador
       :visible="openIntegradorDialog"
-      :visitante="visitanteToEdit"
       @closeDialog="openIntegradorDialog = false"
-      @atribuirClick="iniciarAcompanhamento"
+      @atribuirClick="handleAtribuirIntegrador"
     />
   </q-page>
 
@@ -135,12 +139,12 @@ const visitantes = ref([])
 const loading = ref(true)
 // Dialog
 const openEditDialog = ref(false)
-const visitanteToEdit = ref({})
+const visitanteAcompanhamento = ref({})
 const openIntegradorDialog = ref(false)
 
 
-const { listVisitantesComCelebracao, update:updateVisitante, listVisitantesComAcompanhamento } = visitanteService()
-const { post:salvarAcompanhamento } = acompanhamentoService()
+const { listVisitantesComCelebracao, update:updateVisitante, listVisitantesCelebracaoAcompanhamento  } = visitanteService()
+const { post:salvarAcompanhamento, update:updateAcompanhamento } = acompanhamentoService()
 const { notifyError, notifySuccess } = useNotify()
 
 const router = useRouter()
@@ -150,7 +154,7 @@ const $q = useQuasar()
 
 
 const handleEditVisitante = async (visitante) => {
-  visitanteToEdit.value = {...visitante}
+  visitanteAcompanhamento.value = {...visitante}
   openEditDialog.value = true
 }
 
@@ -194,24 +198,36 @@ const atualizarVisitante = async (visitante) => {
 }
 
 
-const handleAtribuirIntegrador = async (visitante) => {
-  visitanteToEdit.value = {...visitante}
+const handleAbrirDialogIntegrador = async (visitante) => {
+  // cria uma cópia do visitante para não alterar o objeto original
+  visitanteAcompanhamento.value = visitante
   openIntegradorDialog.value = true
 }
 
-const iniciarAcompanhamento = async (acompanhamento) => {
+const handleAtribuirIntegrador = async (integrador) => {
+
+  // console.log('visitanteAcompanhamento', visitanteAcompanhamento.value)
+  // console.log('integrador', integrador)
   try {
-    visitanteToEdit.value.status = "em acompanhamento"
+    // visitante.value.status = "em acompanhamento"
+    // const {celebracao, ...resto} = visitante.value
+    // const visitante = {
+    //   ...resto,
+    //   celebracao_id:celebracao.id
+    // }
 
-    const {celebracao, ...resto} = visitanteToEdit.value
-
-    const visitante = {
-      ...resto,
-      celebracao_id:celebracao.id
+    let acompanhamento = {
+      visitante_id: visitanteAcompanhamento.value.id,
+      integrador_email: integrador.email,
+      integrador_nome: integrador.nome,
+      data_inicio: new Date().toLocaleDateString('en-CA'), /* padrão YYYY-MM-DD */
     }
 
-    await updateVisitante(visitante, 'id')
-    await salvarAcompanhamento(acompanhamento)
+    console.log('acompanhamento', acompanhamento)
+    await updateVisitante({ id:visitanteAcompanhamento.value.id, status:'em acompanhamento'}, 'id')
+    await updateAcompanhamento(acompanhamento, 'visitante_id')
+
+    // await salvarAcompanhamento(acompanhamento)
 
     notifySuccess("Integrador atribuido")
     carregaListVisitantes()
@@ -231,10 +247,12 @@ const carregaListVisitantes = async () => {
 
 try {
   loading.value = true
-  visitantes.value = await listVisitantesComCelebracao()
+  visitantes.value = await listVisitantesCelebracaoAcompanhamento()
+  // visitantes.value = await listVisitantesComCelebracao()
   loading.value = false
 
-  let visitantesComAcompanhamento = await listVisitantesComAcompanhamento()
+  let visitantesComAcompanhamento = await listVisitantesCelebracaoAcompanhamento()
+  // console.log(visitantes.value)
   console.log(visitantesComAcompanhamento)
 
 } catch (error) {

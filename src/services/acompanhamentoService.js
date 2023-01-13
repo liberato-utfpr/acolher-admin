@@ -41,6 +41,8 @@ export default function acompanhamentoService () {
     return data
   }
 
+
+
   return {
     getBy,
     list,
@@ -48,7 +50,7 @@ export default function acompanhamentoService () {
     post,
     update,
     remove,
-    listAcompanhamentoComVisitante,
+
     listAcompanhamentoAbertos
   }
 }

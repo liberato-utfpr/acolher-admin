@@ -30,8 +30,8 @@
     </q-card-section>
 
     <q-card-actions>
-      <q-btn flat label="CANCELAR" color="primary" @click="cancelar" />
-      <q-btn label="ATRIBUIR" color="primary" @click="salvar" />
+      <q-btn flat label="CANCELAR" color="primary" @click="handleCancelar" />
+      <q-btn label="ATRIBUIR" color="primary" @click="handleAtribuir" />
     </q-card-actions>
 
   </q-card>
@@ -42,7 +42,7 @@
 import { ref, onMounted } from 'vue';
 import integradorService from 'src/services/integradorService';
 
-const props = defineProps(['visible', 'visitante', 'mensagem'])
+const props = defineProps(['visible', 'visitante'])
 const emit = defineEmits(['closeDialog', 'atribuirClick'])
 
 const { listIntegradoresAprovados } = integradorService()
@@ -52,32 +52,36 @@ const listaIntegradores = ref([]) // lista de integradores para o q-select
 let integradores = [] // variável temporária para armazenar os integradores
 
 
-const cancelar = () => {
+const handleCancelar = () => {
   integrador.value = ''
   emit('closeDialog')
 }
 
-const salvar = () => {
+const handleAtribuir = () => {
   // cria o objeto acompanhamento
-  const acompanhamento = criarAcompanhamento(props.visitante, integrador.value)
+  // const acompanhamento = criarAcompanhamento(props.visitante, integrador.value)
+
+  // Atualizar o acompanhamento
+
+  let copiaIntegrador = {...integrador.value}
   integrador.value = ''
-  emit('atribuirClick', acompanhamento)
+  emit('atribuirClick', copiaIntegrador)
   emit('closeDialog')
 }
 
 
-const criarAcompanhamento = (visitante, integrador) => {
+// const criarAcompanhamento = (visitante, integrador) => {
 
-  const acompanhamento = {
-    visitante_id: visitante.id,
-    data_inicio: new Date(),
-    integrador_email: integrador.email,
-    integrador_nome: integrador.nome,
-  }
+//   const acompanhamento = {
+//     visitante_id: visitante.id,
+//     data_inicio: new Date(),
+//     integrador_email: integrador.email,
+//     integrador_nome: integrador.nome,
+//   }
 
-  return acompanhamento
+//   return acompanhamento
 
-}
+// }
 
 
 // Filtra a lista de tipo de celebração do q-select
