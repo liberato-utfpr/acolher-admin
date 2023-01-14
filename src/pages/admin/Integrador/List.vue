@@ -29,8 +29,8 @@
           </q-item-section>
           <q-item-section side>
             <div class="q-gutter-xs row flex wrap">
-              <q-btn label="Aprovar" size="md" color="positive" @click="aprovarIntegrador(integrador)" />
-              <q-btn label="Excluir" size="md" color="negative" @click="excluirIntegrador(integrador)" />
+              <q-btn label="Aprovar" size="md" color="positive" @click="handleAprovarIntegrador(integrador)" />
+              <q-btn label="Excluir" size="md" color="negative" @click="handleExcluirIntegrador(integrador)" />
             </div>
           </q-item-section>
         </q-item>
@@ -165,13 +165,11 @@ const handleListIntegradores = async () => {
 }
 
 const handleEdit = (integrador) => {
-
   router.push({ name: 'integrador-form', params: { email: integrador.email } })
-
 }
 
 
-const aprovarIntegrador = async (integrador) => {
+const handleAprovarIntegrador = async (integrador) => {
   try {
     $q.dialog({
       title: 'APROVAÇÃO',
@@ -196,7 +194,7 @@ const aprovarIntegrador = async (integrador) => {
   }
 }
 
-const excluirIntegrador = async (integrador) => {
+const handleExcluirIntegrador = async (integrador) => {
   try {
     $q.dialog({
       title: 'EXCLUSÃO',

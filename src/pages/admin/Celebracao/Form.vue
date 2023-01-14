@@ -200,7 +200,7 @@ const handleSubmit = async () => {
 
       notifySuccess("Cadastro realizado com sucesso")
     }
-    router.push({name: 'celebracao-list'})
+    router.push({name: 'definir-integrador'})
   } catch (error) {
     console.log(error.message)
     notifyError("Erro na gravação da celebração")

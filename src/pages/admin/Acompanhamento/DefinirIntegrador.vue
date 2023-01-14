@@ -3,7 +3,7 @@
   <q-page padding>
     <div class="col-12">
       <p class="text-h5 text-weight-bold">
-        Visitantes
+        Definir Integrador
       </p>
     </div>
 
@@ -66,31 +66,7 @@
           </q-td>
         </template>
 
-        <template v-slot:body-cell-acoes="props">
-          <q-td :props="props" class="q-gutter-x-sm">
 
-            <q-btn
-              icon="mdi-pencil-outline"
-              color="secondary"
-              dense
-              size="sm"
-              @click="handleEditVisitante(props.row)"
-            >
-              <q-tooltip>Editar Celebração</q-tooltip>
-            </q-btn>
-
-            <q-btn
-              icon  = 'mdi-close'
-              color = 'negative'
-              size="sm"
-              dense
-              @click="handleApagarVisitante(props.row)"
-            >
-              <q-tooltip>Excluir Visitante</q-tooltip>
-            </q-btn>
-
-          </q-td>
-        </template>
 
       </q-table>
 
@@ -104,13 +80,7 @@
       />
     </div>
 
-    <!-- DIALOG -->
-    <DialogVisitante
-      :visible="openEditDialog"
-      :visitante="visitanteAcompanhamento"
-      @closeDialog="openEditDialog = false"
-      @atualizarClick="atualizarVisitante"
-    />
+
     <DialogIntegrador
       :visible="openIntegradorDialog"
       @closeDialog="openIntegradorDialog = false"
@@ -130,7 +100,6 @@ import visitanteService from 'src/services/visitanteService';
 import acompanhamentoService from 'src/services/acompanhamentoService';
 import { getDiaSemana, formatDate } from 'src/utils/format'
 
-import DialogVisitante from 'src/components/DialogVisitante.vue';
 import DialogIntegrador from 'src/components/DialogIntegrador.vue';
 
 
@@ -143,7 +112,7 @@ const visitanteAcompanhamento = ref({})
 const openIntegradorDialog = ref(false)
 
 
-const { update:updateVisitante, listVisitantesCelebracaoAcompanhamento  } = visitanteService()
+const { update:updateVisitante, listVisitantesCelebracaoAcompanhamentoSemIntegrador  } = visitanteService()
 const { update:updateAcompanhamento } = acompanhamentoService()
 const { notifyError, notifySuccess } = useNotify()
 
@@ -213,7 +182,6 @@ const handleAtribuirIntegrador = async (integrador) => {
       data_inicio: new Date().toLocaleDateString('en-CA'), /* padrão YYYY-MM-DD */
     }
 
-    // Verifica se o integrador é do mesmo sexo do visitante
     if (integrador.sexo !== visitanteAcompanhamento.value.sexo) {
       notifyError("O integrador deve ser do mesmo sexo do visitante")
       return
@@ -224,7 +192,7 @@ const handleAtribuirIntegrador = async (integrador) => {
     // Atualiza o acompanhamento do visitante com a data de inicio e o integrador
     await updateAcompanhamento(acompanhamento, 'visitante_id')
 
-    notifySuccess("Integrador atribuido")
+    notifySuccess("Integrador atribuído")
     carregaListVisitantes()
 
   } catch (error) {
@@ -240,11 +208,8 @@ const carregaListVisitantes = async () => {
 
   try {
     loading.value = true
-    visitantes.value = await listVisitantesCelebracaoAcompanhamento()
+    visitantes.value = await listVisitantesCelebracaoAcompanhamentoSemIntegrador()
     loading.value = false
-
-
-
 
   } catch (error) {
     notifyError("Erro ao carregar a lista de visitantes")

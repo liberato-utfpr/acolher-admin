@@ -95,21 +95,43 @@
         }"/>
 
         <q-separator  />
-        <q-item-label header class="text-left text-black text-subtitle1" >
+        <!-- <q-item-label header class="text-left text-black text-subtitle1" >
           Acompanhamento
-        </q-item-label>
+        </q-item-label> -->
+
+        <EssentialLink key="Cadastrar visitante" v-bind="{
+          title: 'Cadastrar visitante',
+          caption: '',
+          icon: 'mdi-account-plus',
+          routeName: 'celebracao-form'
+        }"/>
 
         <EssentialLink key="Atribuir Integrador" v-bind="{
           title: 'Definir Integrador',
           caption: '',
-          icon: 'mdi-feature-search',
-          routeName: 'acompanhamento-list'
+          icon: 'mdi-account-arrow-left',
+          routeName: 'definir-integrador'
         }"/>
         <EssentialLink key="Em andamento" v-bind="{
           title: 'Em andamento',
           caption: '',
-          icon: 'mdi-feature-search',
-          routeName: 'acompanhamento-list'
+          icon: 'mdi-eye',
+          routeName: 'em-andamento'
+        }"/>
+        <EssentialLink key="Finalizados" v-bind="{
+          title: 'Finalizados',
+          caption: '',
+          icon: 'mdi-check-all',
+          routeName: 'finalizados'
+        }"/>
+
+        <q-separator  />
+
+        <EssentialLink key="Configurações" v-bind="{
+          title: 'Configurações',
+          caption: '',
+          icon: 'mdi-cog',
+          routeName: 'configuracoes'
         }"/>
 
 

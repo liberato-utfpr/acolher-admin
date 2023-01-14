@@ -29,7 +29,13 @@ const routes = [
       { path: 'celebracao-form/:id?', name:'celebracao-form', component: () => import('src/pages/admin/Celebracao/Form.vue') },
       { path: 'celebracao-update/:id?', name:'celebracao-update', component: () => import('src/pages/admin/Celebracao/Update.vue') },
       { path: 'visitante', name:'visitante-list', component: () => import('src/pages/admin/Visitante/List.vue') },
-      { path: 'acompanhamento', name:'acompanhamento-list', component: () => import('src/pages/admin/Acompanhamento/List.vue') },
+
+
+      { path: 'definir-integrador', name:'definir-integrador', component: () => import('src/pages/admin/Acompanhamento/DefinirIntegrador.vue') },
+      { path: 'em-andamento', name:'em-andamento', component: () => import('src/pages/admin/Acompanhamento/EmAndamento.vue') },
+      { path: 'finalizados', name:'finalizados', component: () => import('src/pages/admin/Acompanhamento/Finalizados.vue') },
+
+      { path: 'configuracoes', name:'configuracoes', component: () => import('src/pages/admin/Configuracoes/Configuracoes.vue') },
 
     ],
     beforeEnter: (to, from) => {

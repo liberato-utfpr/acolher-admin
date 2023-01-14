@@ -71,7 +71,7 @@
           <div class="col-12 col-md-10">
             <q-btn
               class="full-width q-mt-lg"
-              :label="idUpdate ? 'Atualizar' : 'Salvar'"
+              :label="emailUpdate ? 'Atualizar' : 'Salvar'"
               color="primary"
               type="submit"
               size="lg"

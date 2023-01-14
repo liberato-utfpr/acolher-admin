@@ -55,6 +55,19 @@ export default function visitanteService () {
   }
 
 
+  const listVisitantesCelebracaoAcompanhamentoSemIntegrador = async () => {
+    const { data, error } = await supabase
+    .from('visitante_celebracao_acompanhamento')
+    .select()
+    .is('integrador_email', null)
+    .order('data_celebracao')
+    .order('nome')
+
+    if (error) throw error
+    return data
+  }
+
+
 
   const removeVisitante = async (id) => {
     const { data, error } = await supabase
@@ -88,6 +101,7 @@ export default function visitanteService () {
     listVisitantesComCelebracao,
     removeVisitante,
     removeVisitantesFromCelebracao,
-    listVisitantesCelebracaoAcompanhamento
+    listVisitantesCelebracaoAcompanhamento,
+    listVisitantesCelebracaoAcompanhamentoSemIntegrador
   }
 }
