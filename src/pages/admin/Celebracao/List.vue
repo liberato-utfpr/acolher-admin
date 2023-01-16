@@ -112,19 +112,7 @@ const { notifyError, notifySuccess } = useNotify()
 const router = useRouter()
 const $q = useQuasar()
 
-// https://postgrest.org/en/stable/api.html?highlight=operator
-const carregaListCelebracoes = async () => {
-  try {
 
-    loading.value = true
-
-    celebracoes.value = await listCelebracoesVisitantes()
-
-    loading.value = false
-  } catch (error) {
-    notifyError(error.message)
-  }
-}
 
 
 const handleEditCelebracao = (celebracao) => {
@@ -203,6 +191,20 @@ const pagesNumber = computed(() =>
 
 const handleScrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+// https://postgrest.org/en/stable/api.html?highlight=operator
+const carregaListCelebracoes = async () => {
+  try {
+
+    loading.value = true
+
+    celebracoes.value = await listCelebracoesVisitantes()
+
+    loading.value = false
+  } catch (error) {
+    notifyError(error.message)
+  }
 }
 
 onMounted(() => {

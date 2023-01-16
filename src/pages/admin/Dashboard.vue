@@ -7,7 +7,7 @@
       </p>
     </div>
 
-
+    <!-- LISTA INTEGRADORES PENDENTES -->
     <div v-if="pendentes.length > 0"  class="row flex q-gutter-xs q-mb-md justify-between wrap">
       <q-list bordered separator class="rounded-borders col-12">
 

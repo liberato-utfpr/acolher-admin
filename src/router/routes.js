@@ -36,6 +36,8 @@ const routes = [
       { path: 'finalizados', name:'finalizados', component: () => import('src/pages/admin/Acompanhamento/Finalizados.vue') },
 
       { path: 'configuracoes', name:'configuracoes', component: () => import('src/pages/admin/Configuracoes/Configuracoes.vue') },
+      { path: 'mensagem-list', name:'mensagem-list', component: () => import('src/pages/admin/Configuracoes/Mensagem-List.vue') },
+      { path: 'mensagem-form/:id?', name:'mensagem-form', component: () => import('src/pages/admin/Configuracoes/Mensagem-Form.vue') },
 
     ],
     beforeEnter: (to, from) => {

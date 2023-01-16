@@ -6,6 +6,7 @@ import useApi from './UseApi'
 // o usuário é definido fora da função useAuthUser para que atue como um estado global
 // e sempre se refira a um único usuário
 const user = ref(null)
+const userAdmin = ref(null)
 
 export default function useAuthUser () {
 
@@ -60,6 +61,10 @@ export default function useAuthUser () {
   const loginAdmin = async ({ email, password }) => {
     const { getBy } = useApi('administrador')
     const admin = await getBy('email', email)
+    userAdmin.value = admin
+
+    console.log('admin', admin)
+    console.log('userAdmin', userAdmin)
 
     // Não está cadastrado como administrador
     if (!admin) {
@@ -73,6 +78,17 @@ export default function useAuthUser () {
 
     if (error) throw error
     return user
+  }
+
+  const getUserAdmin = async () => {
+    if (userAdmin.value) {
+      return userAdmin.value
+    } else {
+      const { getBy } = useApi('administrador')
+      const admin = await getBy('email', user.value.email)
+      userAdmin.value = admin
+      return userAdmin.value
+    }
   }
 
 
@@ -148,9 +164,11 @@ export default function useAuthUser () {
 
   return {
     user,
+
     login,
     loginIntegrador,
     loginAdmin,
+    getUserAdmin,
     isLoggedIn,
     isIntegrador,
     logout,

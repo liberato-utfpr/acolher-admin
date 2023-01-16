@@ -59,6 +59,7 @@ const handleLogin = async () => {
     router.push({ name: 'admin-dash' })
   } catch (error) {
     notifyError(errorMessages[error.status])
+    console.log(error.message)
 
   }
 }
